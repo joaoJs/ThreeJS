@@ -4,12 +4,18 @@ var renderer;
 var controls;
 var spotLight;
 var counter = 0;
+var sphere;
+
+var pierrot = new Audio('images/Pierrot_1-1.mp3');
 
 init();
 animate();
 
+
+
 function init() {
 
+  pierrot.play();
 	// Create a scene
     scene = new THREE.Scene();
 
@@ -41,7 +47,7 @@ function init() {
 function addLights() {
 
     // var dirLight = new THREE.DirectionalLight(0xffffff, 1);
-    // dirLight.position.set(100, 100, 0);
+    // dirLight.position.set(100, 100, 100);
     // scene.add(dirLight);
 
     // ambient lights usually look pretty bad. They just add
@@ -49,19 +55,19 @@ function addLights() {
     // var ambLight = new THREE.AmbientLight('rgb(200,200,60)');
     // scene.add(ambLight);
 
-    var bluePoint = new THREE.PointLight(0x0033ff, 3, 150);
-    bluePoint.position.set( 70, 25, 0 );
-    scene.add(bluePoint);
+    // var redLight = new THREE.PointLight(0xff3300, 5, 100);
+    // redLight.position.set( -15, 70, -50 );
+    // scene.add(redLight);
     // scene.add(new THREE.PointLightHelper(bluePoint, 3));
 
-    var greenPoint = new THREE.PointLight(0x33ff00, 1, 150);
-    greenPoint.position.set( -70, 25, 100 );
-    scene.add(greenPoint);
-    scene.add(new THREE.PointLightHelper(greenPoint, 3));
+    // var greenPoint = new THREE.PointLight(0x33ff00, 1, 150);
+    // greenPoint.position.set( -70, 25, 100 );
+    // scene.add(greenPoint);
+    // scene.add(new THREE.PointLightHelper(greenPoint, 3));
 
-    spotLight = new THREE.SpotLight(0xffffff, 1, 200, 20, 1);
+    spotLight = new THREE.SpotLight(0xffffff, 5, 310, 0.8, 0.5);
 
-    spotLight.position.set( 0, 150, 0 );
+    spotLight.position.set( -95, 5, 120);
 
     var targetObject = new THREE.Object3D();
     scene.add(targetObject);
@@ -69,20 +75,30 @@ function addLights() {
     spotLight.target = targetObject;
 
     scene.add(spotLight);
-    // scene.add( spotTarget );
-    scene.add(new THREE.PointLightHelper(spotLight, 1));
 
+
+    spotLight.target.position.x = 20;
+    spotLight.target.position.y = 50;
+    spotLight.target.position.z = -100;
+    scene.add( targetObject );
+
+    scene.add(new THREE.PointLightHelper(spotLight, 1));
+    //
     var hemLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, 0.1);
     scene.add(hemLight);
 }
 
 function addSceneElements() {
     // Create a cube used to build the floor and walls
-    var cube = new THREE.CubeGeometry( 200, 1, 200);
+    var cube = new THREE.BoxGeometry( 200, 1, 200);
+
+    var ana = new THREE.TextureLoader().load( 'images/ana2.png' );
+    var bricks = new THREE.TextureLoader().load( 'images/bricks.jpg' );
 
     // create different materials
     var floorMat = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('images/wood-floor.jpg') } );
-    var wallMat = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('images/bricks.jpg') } );
+    var anaMat = new THREE.MeshPhongMaterial( { map: ana } );
+    var wallMat = new THREE.MeshPhongMaterial( { map: bricks } );
     var redMat = new THREE.MeshPhongMaterial( { color: 0xff3300, specular: 0x555555, shininess: 30 } );
     var purpleMat = new THREE.MeshPhongMaterial( { color: 0x6F6CC5, specular: 0x555555, shininess: 30 } );
 
@@ -91,7 +107,7 @@ function addSceneElements() {
     scene.add( floor );
 
     // Back wall
-    var backWall = new THREE.Mesh(cube, wallMat );
+    var backWall = new THREE.Mesh(cube, anaMat );
     backWall.rotation.x = Math.PI/180 * 90;
     backWall.position.set(0,100,-100);
     scene.add( backWall );
@@ -111,15 +127,32 @@ function addSceneElements() {
     scene.add( rightWall );
 
     // Sphere
-    var sphere = new THREE.Mesh(new THREE.SphereGeometry(20, 70, 20), redMat);
-    sphere.position.set(-25, 100, -20);
+    sphere = new THREE.Mesh(new THREE.SphereGeometry(20, 70, 20), redMat);
+    sphere.position.set(70, 25, -20);
     scene.add(sphere);
-
-    // Knot thingy
-    var knot = new THREE.Mesh(new THREE.TorusKnotGeometry( 40, 3, 100, 16), purpleMat);
-    knot.position.set(0, 60, 30);
-    scene.add(knot);
+    //
+    // // Knot thingy
+    // var knot = new THREE.Mesh(new THREE.TorusKnotGeometry( 40, 3, 100, 16), purpleMat);
+    // knot.position.set(0, 60, 30);
+    // scene.add(knot);
 }
+
+// var sphere_x = 70;
+// var sphere_y = 25;
+// var sphere_z = -20;
+
+// variables to determine if z will increase or decrease
+var goesFar = true;
+var comesClose = false;
+
+// variables to determine if x will increase or decrease
+var goesLeft = true;
+var goesRight = false;
+
+// variables to determine if y will increase or decrease
+var goesUp = true;
+var goesDown = false;
+
 
 function animate() {
 
@@ -127,8 +160,47 @@ function animate() {
     requestAnimationFrame( animate );
     controls.update();
 
-    counter += 0.1;
+    counter += 0.05;
     spotLight.target.position.x = Math.sin(counter) * 100;
+
+    if (sphere.position.z <= -100) {
+      comesClose = true;
+      goesFar = false;
+    } else if (sphere.position.z >= 80) {
+      goesFar = true;
+      comesClose = false;
+    }
+    if (goesFar) {
+      sphere.position.z--;
+    } else {
+      sphere.position.z++;
+    }
+
+    if (sphere.position.x >= 80) {
+      goesLeft = true;
+      goesRight = false;
+    } else if (sphere.position.x <= -80) {
+      goesLeft = false;
+      goesRight = true;
+    }
+    if (goesLeft) {
+      sphere.position.x-= 2;
+    } else {
+      sphere.position.x+= 2;
+    }
+
+    if (sphere.position.y <= 25) {
+      goesUp = true;
+      goesDown = false;
+    } else if (sphere.position.y >= 100) {
+      goesUp = false;
+      goesDown = true;
+    }
+    if (goesUp) {
+      sphere.position.y += 1;
+    } else if (goesDown) {
+      sphere.position.y -= 2;
+    }
 }
 
 function onWindowResize() {

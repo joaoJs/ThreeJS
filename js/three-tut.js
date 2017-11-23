@@ -9,8 +9,10 @@ var mesh;
 // img.src = "images/bricks.jpg";
 
 
-init();
-animate();
+  init();
+  animate();
+
+
 
 // function that does all of the setup required to render the scene
 
