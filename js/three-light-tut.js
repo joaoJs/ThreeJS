@@ -163,44 +163,51 @@ function animate() {
     counter += 0.05;
     spotLight.target.position.x = Math.sin(counter) * 100;
 
-    if (sphere.position.z <= -100) {
-      comesClose = true;
-      goesFar = false;
-    } else if (sphere.position.z >= 80) {
-      goesFar = true;
-      comesClose = false;
-    }
-    if (goesFar) {
-      sphere.position.z--;
-    } else {
-      sphere.position.z++;
-    }
+    moveSphere();
 
-    if (sphere.position.x >= 80) {
-      goesLeft = true;
-      goesRight = false;
-    } else if (sphere.position.x <= -80) {
-      goesLeft = false;
-      goesRight = true;
-    }
-    if (goesLeft) {
-      sphere.position.x-= 2;
-    } else {
-      sphere.position.x+= 2;
-    }
+}
 
-    if (sphere.position.y <= 25) {
-      goesUp = true;
-      goesDown = false;
-    } else if (sphere.position.y >= 100) {
-      goesUp = false;
-      goesDown = true;
-    }
-    if (goesUp) {
-      sphere.position.y += 1;
-    } else if (goesDown) {
-      sphere.position.y -= 2;
-    }
+
+// function to move sphere
+function moveSphere() {
+  if (sphere.position.z <= -100) {
+    comesClose = true;
+    goesFar = false;
+  } else if (sphere.position.z >= 80) {
+    goesFar = true;
+    comesClose = false;
+  }
+  if (goesFar) {
+    sphere.position.z--;
+  } else {
+    sphere.position.z++;
+  }
+
+  if (sphere.position.x >= 80) {
+    goesLeft = true;
+    goesRight = false;
+  } else if (sphere.position.x <= -80) {
+    goesLeft = false;
+    goesRight = true;
+  }
+  if (goesLeft) {
+    sphere.position.x-= 2;
+  } else {
+    sphere.position.x+= 2;
+  }
+
+  if (sphere.position.y <= 25) {
+    goesUp = true;
+    goesDown = false;
+  } else if (sphere.position.y >= 100) {
+    goesUp = false;
+    goesDown = true;
+  }
+  if (goesUp) {
+    sphere.position.y += 1;
+  } else if (goesDown) {
+    sphere.position.y -= 2;
+  }
 }
 
 function onWindowResize() {
